@@ -54,7 +54,10 @@ namespace Beer.Core
                 return;
             }
             var path = filename == null ? GetPathFor(item.GetType()) : GetPathFor(filename, subFolderName);
-            File.WriteAllText(path, JsonConvert.SerializeObject(item, indented ? Formatting.Indented : Formatting.None));
+
+            
+            var text = JsonConvert.SerializeObject(item, indented ? Formatting.Indented : Formatting.None);
+            File.WriteAllText(path, text);
         }
         
        

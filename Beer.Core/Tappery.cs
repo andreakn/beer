@@ -14,6 +14,9 @@ namespace Beer.Core
         public const string Pils = "pils";
         public const string Bayer = "bayer";
 
+        
+
+
 
     }
 
@@ -90,21 +93,21 @@ namespace Beer.Core
         {
             File.Delete(jsonFile.FileName);
             var bottle = jsonFile.Thing;
-            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+            fileManager.SaveJson(bottle, bottle.FileName, true, bottle.BeerType);
         }
 
         private void Processed(JsonFile<BottleDto> jsonFile)
         {
             File.Delete(jsonFile.FileName);
             var bottle = jsonFile.Thing;
-            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+            fileManager.SaveJson(bottle, bottle.FileName, true, bottle.BeerType);
 
         }
 
 
         public bool ReceiveBottle(BottleDto b)
         {
-           fileManager.SaveJson(b, b.Id, true,"inbox");
+           fileManager.SaveJson(b, b.FileName, true,"inbox");
             return true;
         }
         

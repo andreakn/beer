@@ -15,6 +15,7 @@ public class BottleDto
     public DateTimeOffset? ConsumedBefore { get; set; }
     public int FermentationSeconds { get; set; }
     public DateTimeOffset? ShippedDate { get; set; }
+    public string FileName => Id + ".json";
 
     public bool IsFull()
     {
