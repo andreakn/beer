@@ -20,8 +20,10 @@ public class Shippery
 
     public async Task TryToShip()
     {
-        await TryToShip(Beer.Pils);
-        await TryToShip(Beer.Bayer);
+        foreach (var beerType in Beer.BeerTypes)
+        {
+            await TryToShip(beerType);
+        }
         await Task.Delay(500);
     }
 
