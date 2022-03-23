@@ -12,6 +12,8 @@ namespace Beer.Core
 {
     public class Beer
     {
+        public static ConcurrentDictionary<string, int> BeerLevels = new ConcurrentDictionary<string, int>();
+
         public static ConcurrentBag<string> BeerTypes = new ConcurrentBag<string>
         {
             "Trappist",
@@ -31,6 +33,7 @@ namespace Beer.Core
         private IBrewingGateway _brewingGateway;
         private bool _running;
         private Task _loop;
+        private Task _loop2;
 
         public Tappery(IBrewingGateway brewingGateway)
         {
@@ -45,6 +48,7 @@ namespace Beer.Core
             }
             _running = true;
             _loop = Task.Run(TryToFillBottles);
+            _loop2 = Task.Run(UpdateTankLevels);
         }
 
         private async Task TryToFillBottles()
@@ -71,8 +75,8 @@ namespace Beer.Core
                 }
                 else
                 {
-                    var levelResult = await _brewingGateway.GetLevel(type);
-                    if(levelResult.Item2==null && levelResult.Item1 < (bottle.MaxContent - bottle.Content))
+                    var level = await GetLevel(type);
+                    if(level < (bottle.MaxContent - bottle.Content))
                     {
                         await _brewingGateway.FillContainer(bottle.BeerType);
                     }
@@ -116,6 +120,48 @@ namespace Beer.Core
 
             fileManager.SaveJson(b, b.Id, true,"inbox");
             return true;
+        }
+
+        public async Task UpdateTankLevels()
+        {
+            var levelResult = await _brewingGateway.GetLevels();
+            if (levelResult.Item2 == null)
+            {
+                return;
+            }
+
+            foreach (var level in levelResult.Item1)
+            {
+               if (Beer.BeerLevels.ContainsKey(level.Key))
+               {
+                   if (Beer.BeerLevels.TryGetValue(level.Key, out int existingValue))
+                   {
+                       Beer.BeerLevels.TryUpdate(level.Key, level.Value, existingValue);
+                   }
+               }
+               else
+               {
+                   Beer.BeerLevels.AddOrUpdate(level.Key, level.Value, (s, i) => level.Value);
+               }
+            }
+
+            await Task.Delay(250);
+        }
+
+        public async Task<int> GetLevel(string type)
+        {
+            if (Beer.BeerLevels.TryGetValue(type, out int level))
+            {
+                return level;
+            }
+
+            var levelResult = await _brewingGateway.GetLevel(type);
+            if (levelResult.Item2 == null )
+            {
+                return levelResult.Item1;
+            }
+
+            return 0;
         }
     }
 
