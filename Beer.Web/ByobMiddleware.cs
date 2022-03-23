@@ -22,8 +22,8 @@ public class ByobMiddleware
         if (context.Request.Path.StartsWithSegments("/api/byob"))
         {
             var bottle = await context.Request.ReadFromJsonAsync<BottleDto>();
-
-
+            _tappery.ReceiveBottle(bottle);
+            
             Console.WriteLine($"Got bottle: {bottle.Id} ({bottle.BeerType})");
             Console.WriteLine(JsonConvert.SerializeObject(bottle));
             context.Response.StatusCode = 204;

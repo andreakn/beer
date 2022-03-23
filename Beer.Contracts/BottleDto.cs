@@ -27,6 +27,11 @@ public class BottleDto
         return state == BottleState.Broken;
     }
 
+    public bool CanBeRecycled()
+    {
+        return IsBroken() && Content < MaxContent;
+    }
+
     public bool IsReadyToShip()
     {
         if (CorkedTime == null)
@@ -34,10 +39,24 @@ public class BottleDto
             return false;
         }
 
+        if (IsBroken())
+            return false;
+
+
         var doneTime = CorkedTime + TimeSpan.FromSeconds(FermentationSeconds);
         return doneTime >= DateTimeOffset.UtcNow;
     }
 
+    public bool IsAboutToExpire()
+    {
+        if (ConsumedBefore == null)
+        {
+            return false;
+        }
+
+        return DateTimeOffset.UtcNow < ConsumedBefore && DateTimeOffset.UtcNow.AddSeconds(2) > ConsumedBefore;
+    } 
+    
     public bool IsExpired()
     {
         if (ConsumedBefore == null)
