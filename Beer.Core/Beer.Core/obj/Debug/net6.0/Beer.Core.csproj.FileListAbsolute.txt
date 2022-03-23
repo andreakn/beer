@@ -1,0 +1,15 @@
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\Beer.Core.exe
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\Beer.Core.deps.json
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\Beer.Core.runtimeconfig.json
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\Beer.Core.dll
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\ref\Beer.Core.dll
+C:\home\beer2\beer\Beer.Core\Beer.Core\bin\Debug\net6.0\Beer.Core.pdb
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.csproj.AssemblyReference.cache
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.AssemblyInfoInputs.cache
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.AssemblyInfo.cs
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.csproj.CoreCompileInputs.cache
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.dll
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\ref\Beer.Core.dll
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.pdb
+C:\home\beer2\beer\Beer.Core\Beer.Core\obj\Debug\net6.0\Beer.Core.genruntimeconfig.cache
