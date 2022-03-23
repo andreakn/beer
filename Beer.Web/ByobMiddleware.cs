@@ -17,8 +17,7 @@ public class ByobMiddleware
         _tappery = tappery;
         _shippery = shippery;
 
-        _tappery.Start();
-        _shippery.Start();
+       
     }
 
     public async Task Invoke(HttpContext context)

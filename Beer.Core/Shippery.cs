@@ -20,11 +20,14 @@ public class Shippery
 
     public async Task TryToShip()
     {
-        foreach (var beerType in Beer.BeerTypes)
+        while (_running)
         {
-            await TryToShip(beerType);
+            foreach (var beerType in Beer.BeerTypes)
+            {
+                await TryToShip(beerType);
+            }
+            await Task.Delay(500);
         }
-        await Task.Delay(500);
     }
 
     private int CaseSize = 24;
@@ -39,6 +42,7 @@ public class Shippery
     public async Task TryToShip(string type)
     {
         var beers = fileManager.LoadFiles<BottleDto>(type);
+        if (beers == null) return;
         var readyToShip = beers.Where(x => x.Thing.IsReadyToShip()).Take(CaseSize);
         if (readyToShip.Count() == CaseSize)
         {

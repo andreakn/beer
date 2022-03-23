@@ -103,6 +103,8 @@ namespace Beer.Core
                         Thing = LoadJsonForExactPath<T>(file)
                     });
                 }
+
+                return ret;
             }
 
             return null;

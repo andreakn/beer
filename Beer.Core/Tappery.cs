@@ -49,17 +49,22 @@ namespace Beer.Core
 
         private async Task TryToFillBottles()
         {
-            foreach (var beerType in Beer.BeerTypes)
+            while (_running)
             {
-                await TryFillBottles(beerType);
-            }
+                foreach (var beerType in Beer.BeerTypes)
+                {
+                    await TryFillBottles(beerType);
+                }
 
-            await Task.Delay(500);
+                await Task.Delay(500);
+            }
         }
 
         private async Task TryFillBottles(string type)
         {
-            var inbox = fileManager.LoadFiles<BottleDto>("inbox").Where(x=>x.Thing.BeerType == type);
+            var files = fileManager.LoadFiles<BottleDto>("inbox");
+            if (files == null) return;
+                var inbox = files.Where(x=>x.Thing.BeerType == type);
 
             foreach (var jsonFile in inbox)
             {
