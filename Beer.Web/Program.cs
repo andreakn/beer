@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Any, 5242));
@@ -13,6 +14,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 app.UseStaticFiles();
+
+app.UseMiddleware<ByobMiddleware>();
 
 app.UseRouting();
 
