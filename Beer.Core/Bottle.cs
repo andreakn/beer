@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Beer.Contracts;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Beer.Core
@@ -11,12 +12,10 @@ namespace Beer.Core
     public class Tappery
     {
         private FileManager fileManager = new FileManager();
-
-       
-
-        public bool ReceiveBottle(Bottle b)
+        
+        public bool ReceiveBottle(BottleDto b)
         {
-            var existingBottle = fileManager.LoadJson<Bottle>("inbox.json");
+            var existingBottle = fileManager.LoadJson<BottleDto>("inbox.json");
             if (existingBottle != null)
             {
                 return false;
@@ -25,20 +24,25 @@ namespace Beer.Core
             return true;
         }
 
-        public bool TryFillBottle()
+        public async Task<bool> TryFillBottle()
         {
             var state = fileManager.LoadJson<TapperyState>() ?? LoadTapstate();
             if (!state.IsTapping)
             {
-                var b = fileManager.LoadJson<Bottle>("inbox.json");
-                if (b == default(Bottle))
+                var b = fileManager.LoadJson<BottleDto>("inbox.json");
+                if (b == default(BottleDto))
                 {
                     return false;
                 }
+                
                 state.CurrentBottle = b;
-                fileManager.SaveJson(state);
-
-
+                
+                // call fill endpoint
+                if (true) //vi kunne starte å fylle
+                {
+                    state.IsTapping = true;
+                    fileManager.SaveJson(state);
+                }
             }
             
 
@@ -56,7 +60,7 @@ namespace Beer.Core
     {
         public Tank PilsnerTank { get; set; } = new Tank();
         public Tank BayerTank { get; set; } = new Tank();
-        public Bottle CurrentBottle { get; set; } 
+        public BottleDto CurrentBottle { get; set; } 
 
         public bool IsTapping { get; set; }
     }
@@ -68,11 +72,5 @@ namespace Beer.Core
     }
 
 
-    public class Bottle
-    {
-        public Guid Id { get; set; }
-        public string Type { get; set; }
-
-
-    }
+    
 }
