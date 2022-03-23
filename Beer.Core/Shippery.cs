@@ -14,9 +14,11 @@ public class Shippery
             return;
         }
         _running = true;
-        _loop = Task.Run(TryToShip);
+        while (_running)
+        {
+            _loop = Task.Run(TryToShip);
+        }
     }
-
 
     public async Task TryToShip()
     {
