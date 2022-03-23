@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,18 +12,21 @@ namespace Beer.Core
 {
     public class Beer
     {
-        public const string Pils = "pils";
-        public const string Bayer = "bayer";
-
-
+        public static ConcurrentBag<string> BeerTypes = new ConcurrentBag<string>
+        {
+            "Trappist",
+            "IPA",
+            "Stout",
+            "Pale ale",
+            "Pilsner",
+            "Porter",
+            "Root beer"
+        };
     }
 
 
     public class Tappery
     {
-
-
-
         private FileManager fileManager = new FileManager();
         private IBrewingGateway _brewingGateway;
         private bool _running;
@@ -45,14 +49,16 @@ namespace Beer.Core
 
         private async Task TryToFillBottles()
         {
-            await TryFillBottles(Beer.Pils);
-            await TryFillBottles(Beer.Bayer);
+            foreach (var beerType in Beer.BeerTypes)
+            {
+                await TryFillBottles(beerType);
+            }
+
             await Task.Delay(500);
         }
 
         private async Task TryFillBottles(string type)
         {
-            var state = fileManager.LoadJson<TapperyState>() ?? await LoadTapstate();
             var inbox = fileManager.LoadFiles<BottleDto>("inbox").Where(x=>x.Thing.BeerType == type);
 
             foreach (var jsonFile in inbox)
@@ -101,29 +107,10 @@ namespace Beer.Core
 
         }
 
-
         public bool ReceiveBottle(BottleDto b)
         {
            fileManager.SaveJson(b, b.Id, true,"inbox");
             return true;
-        }
-        
-
-        private async Task<TapperyState> LoadTapstate()
-        {
-            var pilsLevel = await _brewingGateway.GetLevel(Beer.Pils);
-            var bayerLevel = await _brewingGateway.GetLevel(Beer.Bayer);
-
-            if (pilsLevel.Item2 == null && bayerLevel.Item2 == null)
-            {
-                return new TapperyState
-                {
-                    BayerTank = new Tank { FillLevel = bayerLevel.Item1 },
-                    PilsnerTank = new Tank { FillLevel = pilsLevel.Item1 }
-                };
-            }
-
-            throw new Exception("AARGH, kan ikke lese tank-state");
         }
     }
 
