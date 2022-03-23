@@ -38,6 +38,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseMiddleware<ByobMiddleware>();
+//app.UseMiddleware<Jean>();
 
 app.UseRouting();
 

@@ -33,12 +33,15 @@ public class BrewingGateway : IBrewingGateway
         return (-1, await result.Content.ReadFromJsonAsync<ProblemDetailsDto>())!;
     }
 
-    public async Task<(IEnumerable<(string, int)>, ProblemDetailsDto)> GetLevels()
+    public async Task<(IEnumerable<KeyValuePair<string,int>>, ProblemDetailsDto)> GetLevels()
     {
         var path = $"/api/brewingmachine/levels";
         var result = await _client.GetAsync(path);
         if (result.StatusCode == HttpStatusCode.OK)
-            return (new List<(string,int)>(), null)!; // TODO fix this
+        {
+            var dict = await result.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+            return (dict, null)!; 
+        }
         return (null, await result.Content.ReadFromJsonAsync<ProblemDetailsDto>())!;
     }
 

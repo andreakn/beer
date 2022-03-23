@@ -48,3 +48,29 @@ public class ByobMiddleware
     }
 
 }
+
+public class Jean
+{
+    private readonly RequestDelegate _next;
+    private readonly IBrewingGateway _gateway;
+
+    public Jean(RequestDelegate next, IBrewingGateway gateway)
+    {
+        _next = next;
+        _gateway = gateway;
+    }
+
+    public async Task Invoke(HttpContext context)
+    {
+        Console.WriteLine("got request: "+ context.Request.Path);
+        if (context.Request.Path.StartsWithSegments("/jean"))
+        {
+            await _gateway.GetLevels();
+        }
+        else
+        {
+            await _next(context);
+        }
+    }
+
+}
