@@ -47,16 +47,16 @@ namespace Beer.Core
             throw new ApplicationException("Could not find solution folder.");
         }
 
-        public void SaveJson(object item, string filename = null, bool indented = false)
+        public void SaveJson(object item, string filename = null, bool indented = false, string subFolderName = null)
         {
             if (item == null)
             {
                 return;
             }
-            var path = filename == null ? GetPathFor(item.GetType()) : GetPathFor(filename);
+            var path = filename == null ? GetPathFor(item.GetType()) : GetPathFor(filename, subFolderName);
             File.WriteAllText(path, JsonConvert.SerializeObject(item, indented ? Formatting.Indented : Formatting.None));
         }
-
+        
         public void SaveText(string filename, string text)
         {
             var path = GetPathFor(filename);
@@ -73,6 +73,33 @@ namespace Beer.Core
         {
             var path = filename == null ? GetPathFor<T>() : GetPathFor(filename);
             return File.Exists(path)
+                ? JsonConvert.DeserializeObject<T>(File.ReadAllText(path))
+                : default(T);
+        }
+        public T LoadJsonForExactPath<T>(string path)
+        {
+            return File.Exists(path)
+                ? JsonConvert.DeserializeObject<T>(File.ReadAllText(path))
+                : default(T);
+        }
+
+        public List<JsonFile<T>> LoadFiles<T>(string subfolder = null)
+        {
+            var path = GetPathFor(subfolder);
+            if (Directory.Exists(path))
+            {
+                var ret = new List<JsonFile<T>>();
+
+                foreach (var file in Directory.GetFiles(path))
+                {
+                    ret.Add(new JsonFile<T>
+                    {
+                        FileName = file, 
+                        Thing = LoadJson<T>(file)
+                    });
+                }
+            }
+
                 ? JsonConvert.DeserializeObject<T>(File.ReadAllText(path))
                 : default(T);
         }
@@ -100,10 +127,21 @@ namespace Beer.Core
             return GetPathFor(filename);
         }
 
-        private string GetPathFor(string filename)
+        private string GetPathFor(string filename, string subfolder = null)
         {
             var path = Path.Combine(_basePath, filename);
+            if (!string.IsNullOrWhiteSpace(subfolder))
+            {
+                path = Path.Combine(_basePath, subfolder, filename);
+            }
             return path;
         }
+    }
+
+
+    public class JsonFile<T>
+    {
+        public string FileName { get; set; }
+        public T Thing { get; set; }
     }
 }

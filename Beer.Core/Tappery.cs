@@ -34,13 +34,21 @@ namespace Beer.Core
                 {
                     return false;
                 }
-                
+
                 state.CurrentBottle = b;
-                
+
                 // call fill endpoint
                 if (true) //vi kunne starte å fylle
                 {
+                    state.CurrentBottle = b; //todo: den vi fikk tilbake
                     state.IsTapping = true;
+                    if (b.Content == b.MaxContent )
+                    {
+                        state.CurrentBottle = null;
+                        state.IsTapping = false;
+                        fileManager.SaveJson(b, b.Id, true, "storage");
+                    }
+                    
                     fileManager.SaveJson(state);
                 }
             }
@@ -63,6 +71,16 @@ namespace Beer.Core
         public BottleDto CurrentBottle { get; set; } 
 
         public bool IsTapping { get; set; }
+
+        public bool NoMoreLeft(string beerType)
+        {
+            if (beerType == "bayer")
+            {
+                return BayerTank.FillLevel == 0;
+            }
+
+            return PilsnerTank.FillLevel == 0;
+        }
     }
 
     public class Tank
