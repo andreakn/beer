@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.Core", "Beer.Core\Beer.Core.csproj", "{DF0A77C0-7814-4451-9B0F-63F89B98587D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beer.Contracts", "Beer.Contracts\Beer.Contracts.csproj", "{2C34D2CC-4668-4D53-97E9-864628AEA108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DF0A77C0-7814-4451-9B0F-63F89B98587D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF0A77C0-7814-4451-9B0F-63F89B98587D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF0A77C0-7814-4451-9B0F-63F89B98587D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C34D2CC-4668-4D53-97E9-864628AEA108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C34D2CC-4668-4D53-97E9-864628AEA108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C34D2CC-4668-4D53-97E9-864628AEA108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C34D2CC-4668-4D53-97E9-864628AEA108}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
