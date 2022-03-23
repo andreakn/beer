@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>BigMachines</PackageId>
+    <Authors>archi-Doc</Authors>
+    <Product>BigMachines</Product>
+    <Description>BigMachines is State Machine library for .NET</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/archi-Doc/BigMachines</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/archi-Doc/BigMachines</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\BigMachinesGenerator\bin\$(Configuration)\netstandard2.0\BigMachinesGenerator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Arc.Visceral" Version="0.1.0" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Arc.Collections" Version="1.0.2" />
+    <PackageReference Include="Arc.Threading" Version="0.11.1" />
+    <PackageReference Include="Tinyhand" Version="0.27.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
