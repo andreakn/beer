@@ -57,14 +57,18 @@ public class Shipper
             await _gateway.Ship(jsonFile.Thing.Id);
             File.Delete(jsonFile.FileName);
         }
-
-          
+        
+        var recyclable = fileManager.LoadFiles<BottleDto>(type).Where(x => x.Thing.CanBeRecycled());
+        foreach (var jsonFile in recyclable)
+        {
+            await _gateway.Recycle(jsonFile.Thing.Id);
+            File.Delete(jsonFile.FileName);
+        }  
 
         var broken = fileManager.LoadFiles<BottleDto>(type).Where(x => x.Thing.IsBroken());
         foreach (var jsonFile in broken)
         {
-            await _gateway.Recycle(jsonFile.Thing.Id);
-            File.Delete(jsonFile.FileName);
+              File.Delete(jsonFile.FileName);
         }
 
         var bad = fileManager.LoadFiles<BottleDto>(type).Where(x => x.Thing.IsExpired());

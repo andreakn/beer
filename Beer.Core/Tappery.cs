@@ -17,15 +17,81 @@ namespace Beer.Core
 
     public class Tappery
     {
-       
+
+
 
         private FileManager fileManager = new FileManager();
         private IBrewingGateway _brewingGateway;
+        private bool _running;
+        private Task _loop;
 
         public Tappery(IBrewingGateway brewingGateway)
         {
             _brewingGateway = brewingGateway;
         }
+
+        public void Start()
+        {
+            if (_running)
+            {
+                return;
+            }
+            _running = true;
+            _loop = Task.Run(TryToFillBottles);
+        }
+
+        private async Task TryToFillBottles()
+        {
+            await TryFillBottles(Beer.Pils);
+            await TryFillBottles(Beer.Bayer);
+            await Task.Delay(500);
+        }
+
+        private async Task TryFillBottles(string type)
+        {
+            var state = fileManager.LoadJson<TapperyState>() ?? await LoadTapstate();
+            var inbox = fileManager.LoadFiles<BottleDto>("inbox").Where(x=>x.Thing.BeerType == type);
+
+            foreach (var jsonFile in inbox)
+            {
+                var bottle = jsonFile.Thing;
+                if (bottle.IsBroken() || bottle.IsFull())
+                {
+                    Processed(jsonFile);
+                    continue;
+                }
+                else
+                {
+                    var result = await _brewingGateway.FillBottle(bottle.Id);
+                    if (result.Item2 == null)
+                    {
+                        jsonFile.Thing = result.Item1;
+                        ReQueue(jsonFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine("");
+                        result.Item2.
+                    }
+                }
+            }
+        }
+
+        private void ReQueue(JsonFile<BottleDto> jsonFile)
+        {
+            File.Delete(jsonFile.FileName);
+            var bottle = jsonFile.Thing;
+            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+        }
+
+        private void Processed(JsonFile<BottleDto> jsonFile)
+        {
+            File.Delete(jsonFile.FileName);
+            var bottle = jsonFile.Thing;
+            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+
+        }
+
 
         public bool ReceiveBottle(BottleDto b)
         {
