@@ -115,6 +115,12 @@ namespace Beer.Core
         public bool ReceiveBottle(BottleDto b)
         {
            fileManager.SaveJson(b, b.FileName, true,"inbox");
+
+           if (!Beer.BeerTypes.Contains(b.BeerType))
+           {
+               Beer.BeerTypes.Add(b.BeerType);
+           }
+
             return true;
         }
     }

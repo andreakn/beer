@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -55,7 +56,11 @@ namespace Beer.Core
             }
             var path = filename == null ? GetPathFor(item.GetType()) : GetPathFor(filename, subFolderName);
 
-            
+            var info = new DirectoryInfo(path);
+            if (!info.Exists)
+            {
+                Directory.CreateDirectory(path.Substring(0, path.LastIndexOf("\\")));
+            }
             var text = JsonConvert.SerializeObject(item, indented ? Formatting.Indented : Formatting.None);
             File.WriteAllText(path, text);
         }
