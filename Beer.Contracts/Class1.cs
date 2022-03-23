@@ -6,8 +6,8 @@ public class BottleDto
 {
     public string Id { get; set; }
     public string TeamId { get; set; }
-    public string BeerType { get; set; }
-    public string Label { get; set; }
+    public string? BeerType { get; set; }
+    public string? Label { get; set; }
     public int Content { get; set; }
     public int MaxContent { get; set; }
     public string State { get; set; } //Good, Broken
@@ -24,9 +24,9 @@ public class CaseDto
 
 public class NotBottleDto
 {
-    public string BeerType { get; set; }
-    public string Label { get; set; }
-    public string Content { get; set; }
+    public string? BeerType { get; set; }
+    public string? Label { get; set; }
+    public string? Content { get; set; }
 }
 
 public class ProblemDetailsDto
@@ -40,7 +40,7 @@ public class ProblemDetailsDto
 
 public class ShipOperationResultDto
 {
-    public string Message { get; set; }
+    public string? Message { get; set; }
     public bool Success { get; set; }
     public int Score { get; set; }
     public DateTimeOffset? ShipmentDate { get; set; }
@@ -93,6 +93,41 @@ public class ConveyorBeltState
             "stopped" => Stopped,
             "started" => Started,
             _ => Crashed
+        };
+    }
+
+    public string Value { get; }
+}
+
+public class ShipmentError
+{
+    public static readonly ShipmentError Undefined = new ShipmentError("Undefined");
+    public static readonly ShipmentError BottleIsNotFull = new ShipmentError("BottleIsNotFull");
+    public static readonly ShipmentError BottleIsBroken = new ShipmentError("BottleIsBroken");
+    public static readonly ShipmentError BottleIsNotCorked = new ShipmentError("BottleIsNotCorked");
+    public static readonly ShipmentError FermentationIsNotDone = new ShipmentError("FermentationIsNotDone");
+    public static readonly ShipmentError ConsumptionDateIsPassed = new ShipmentError("ConsumptionDateIsPassed");
+    public static readonly ShipmentError RecycledFullBottle  = new ShipmentError("RecycledFullBottle");
+
+    private ShipmentError(string value)
+    {
+        Value = value;
+    }
+    
+    public static ShipmentError Parse(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) 
+            throw new ArgumentNullException("Its null man");
+
+        return value.ToLowerInvariant() switch
+        {
+            "bottleisnotfull" => BottleIsNotFull,
+            "bottleisbroken" => BottleIsBroken,
+            "bottleisnotcorked" => BottleIsNotCorked,
+            "fermentationisnotdone" => FermentationIsNotDone,
+            "comsumptiondateispassed" => ConsumptionDateIsPassed,
+            "recycledfullbottle" => RecycledFullBottle,
+            _ => Undefined
         };
     }
 
