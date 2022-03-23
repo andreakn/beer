@@ -8,11 +8,24 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Beer.Core
 {
+    public class Beer
+    {
+        public const string Pils = "pils";
+        public const string Bayer = "bayer";
+    }
     
     public class Tappery
     {
+       
+
         private FileManager fileManager = new FileManager();
-        
+        private IBrewingGateway _brewingGateway;
+
+        public Tappery(IBrewingGateway brewingGateway)
+        {
+            _brewingGateway = brewingGateway;
+        }
+
         public bool ReceiveBottle(BottleDto b)
         {
             var existingBottle = fileManager.LoadJson<BottleDto>("inbox.json");
@@ -26,7 +39,7 @@ namespace Beer.Core
 
         public async Task<bool> TryFillBottle()
         {
-            var state = fileManager.LoadJson<TapperyState>() ?? LoadTapstate();
+            var state = fileManager.LoadJson<TapperyState>() ?? await LoadTapstate();
             if (!state.IsTapping)
             {
                 var b = fileManager.LoadJson<BottleDto>("inbox.json");
@@ -36,31 +49,52 @@ namespace Beer.Core
                 }
 
                 state.CurrentBottle = b;
-
-                // call fill endpoint
-                if (true) //vi kunne starte å fylle
+                var currentlevel = state.CurrentBottle.Content;
+                if (currentlevel < b.MaxContent)
                 {
-                    state.CurrentBottle = b; //todo: den vi fikk tilbake
-                    state.IsTapping = true;
-                    if (b.Content == b.MaxContent )
+                    var diff = b.MaxContent - currentlevel;
+                    if(diff > state.GetLevel(b.BeerType))
+
+
+
+                    // call fill endpoint
+                    if (true) //vi kunne starte å fylle
                     {
-                        state.CurrentBottle = null;
-                        state.IsTapping = false;
-                        fileManager.SaveJson(b, b.Id, true, "storage");
+                        state.CurrentBottle = b; //todo: den vi fikk tilbake
+                        state.IsTapping = true;
+                        if (b.Content == b.MaxContent)
+                        {
+                            state.CurrentBottle = null;
+                            state.IsTapping = false;
+                            fileManager.SaveJson(b, b.Id, true, "storage");
+                        }
+
+                        fileManager.SaveJson(state);
                     }
-                    
-                    fileManager.SaveJson(state);
                 }
+
+               
             }
             
 
             return true;
         }
 
-        private TapperyState LoadTapstate()
+        private async Task<TapperyState> LoadTapstate()
         {
+            var pilsLevel = await _brewingGateway.GetLevel(Beer.Pils);
+            var bayerLevel = await _brewingGateway.GetLevel(Beer.Bayer);
 
-            return new TapperyState();
+            if (pilsLevel.Item2 == null && bayerLevel.Item2 == null)
+            {
+                return new TapperyState
+                {
+                    BayerTank = new Tank { FillLevel = bayerLevel.Item1 },
+                    PilsnerTank = new Tank { FillLevel = pilsLevel.Item1 }
+                };
+            }
+
+            throw new Exception("AARGH, kan ikke lese tank-state");
         }
     }
 
@@ -74,18 +108,23 @@ namespace Beer.Core
 
         public bool NoMoreLeft(string beerType)
         {
+            return GetLevel(beerType) == 0;
+        }
+
+        public int GetLevel(string beerType)
+        {
             if (beerType == "bayer")
             {
-                return BayerTank.FillLevel == 0;
+                return BayerTank.FillLevel;
             }
 
-            return PilsnerTank.FillLevel == 0;
+            return PilsnerTank.FillLevel;
         }
     }
 
     public class Tank
     {
-        public double FillLevel { get; set; }
+        public int FillLevel { get; set; }
         public bool IsFillingUp { get; set; }
     }
 

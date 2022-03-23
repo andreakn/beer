@@ -57,6 +57,8 @@ namespace Beer.Core
             File.WriteAllText(path, JsonConvert.SerializeObject(item, indented ? Formatting.Indented : Formatting.None));
         }
         
+       
+
         public void SaveText(string filename, string text)
         {
             var path = GetPathFor(filename);
@@ -95,13 +97,12 @@ namespace Beer.Core
                     ret.Add(new JsonFile<T>
                     {
                         FileName = file, 
-                        Thing = LoadJson<T>(file)
+                        Thing = LoadJsonForExactPath<T>(file)
                     });
                 }
             }
 
-                ? JsonConvert.DeserializeObject<T>(File.ReadAllText(path))
-                : default(T);
+            return null;
         }
 
         public T LoadJsonOrDefault<T>(T defaultValue = default(T))
