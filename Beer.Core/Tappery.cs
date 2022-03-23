@@ -53,17 +53,22 @@ namespace Beer.Core
 
         private async Task TryToFillBottles()
         {
-            foreach (var beerType in Beer.BeerTypes)
+            while (_running)
             {
-                await TryFillBottles(beerType);
-            }
+                foreach (var beerType in Beer.BeerTypes)
+                {
+                    await TryFillBottles(beerType);
+                }
 
-            await Task.Delay(500);
+                await Task.Delay(500);
+            }
         }
 
         private async Task TryFillBottles(string type)
         {
-            var inbox = fileManager.LoadFiles<BottleDto>("inbox").Where(x=>x.Thing.BeerType == type);
+            var files = fileManager.LoadFiles<BottleDto>("inbox");
+            if (files == null) return;
+                var inbox = files.Where(x=>x.Thing.BeerType == type);
 
             foreach (var jsonFile in inbox)
             {
@@ -100,25 +105,26 @@ namespace Beer.Core
         {
             File.Delete(jsonFile.FileName);
             var bottle = jsonFile.Thing;
-            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+            fileManager.SaveJson(bottle, bottle.FileName, true, bottle.BeerType);
         }
 
         private void Processed(JsonFile<BottleDto> jsonFile)
         {
             File.Delete(jsonFile.FileName);
             var bottle = jsonFile.Thing;
-            fileManager.SaveJson(bottle, bottle.Id, true, bottle.BeerType);
+            fileManager.SaveJson(bottle, bottle.FileName, true, bottle.BeerType);
 
         }
 
         public bool ReceiveBottle(BottleDto b)
         {
-            if (!Beer.BeerTypes.Contains(b.BeerType))
-            {
-                Beer.BeerTypes.Add(b.BeerType);
-            }
+           fileManager.SaveJson(b, b.FileName, true,"inbox");
 
-            fileManager.SaveJson(b, b.Id, true,"inbox");
+           if (!Beer.BeerTypes.Contains(b.BeerType))
+           {
+               Beer.BeerTypes.Add(b.BeerType);
+           }
+
             return true;
         }
 

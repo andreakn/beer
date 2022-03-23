@@ -28,6 +28,8 @@ builder.Services.AddSingleton<Shippery>();
 var app = builder.Build();
 
 
+app.Services.GetService<Tappery>().Start();
+app.Services.GetService<Shippery>().Start();
 
 
 
