@@ -15,4 +15,9 @@ public class BottleDto
     public DateTimeOffset? ConsumedBefore { get; set; }
     public int FermentationSeconds { get; set; }
     public DateTimeOffset? ShippedDate { get; set; }
+
+    public bool IsBottleFull()
+    {
+        return MaxContent == Content;
+    }
 }
