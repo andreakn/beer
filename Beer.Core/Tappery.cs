@@ -84,18 +84,21 @@ namespace Beer.Core
                     if(level < (bottle.MaxContent - bottle.Content))
                     {
                         await _brewingGateway.FillContainer(bottle.BeerType);
-                    }
-
-                    var result = await _brewingGateway.FillBottle(bottle.Id);
-                    if (result.Item1)
-                    {
-                        jsonFile.Thing = result.Item2;
-                        ReQueue(jsonFile);
+                        return;
                     }
                     else
                     {
-                        Console.WriteLine("we gots problems filling: "+JsonConvert.SerializeObject(result.Item3));
-                        Console.WriteLine("Lets try refilling "+bottle.BeerType);
+                        var result = await _brewingGateway.FillBottle(bottle.Id);
+                        if (result.Item1)
+                        {
+                            jsonFile.Thing = result.Item2;
+                            ReQueue(jsonFile);
+                        }
+                        else
+                        {
+                            Console.WriteLine("we gots problems filling: " + JsonConvert.SerializeObject(result.Item3));
+                            Console.WriteLine("Lets try refilling " + bottle.BeerType);
+                        }
                     }
                 }
             }
