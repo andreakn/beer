@@ -1,10 +1,23 @@
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using Beer.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Any, 5242));
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddHttpClient<IConveyorBeltGateway, ConveyorBeltGateway>(opt =>
+{
+    opt.BaseAddress = new Uri("http://hopster.m07039.clients.dev.nrk.no/");
+    opt.DefaultRequestHeaders.Add("apiKey", Config.ApiKey);
+});
+builder.Services.AddHttpClient<IBrewingGateway, BrewingGateway>(opt =>
+{
+    opt.BaseAddress = new Uri("http://hopster.m07039.clients.dev.nrk.no/");
+    opt.DefaultRequestHeaders.Add("apiKey", Config.ApiKey);
+});
+builder.Services.AddSingleton<Tappery>();
+
 
 var app = builder.Build();
 
