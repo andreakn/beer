@@ -8,12 +8,17 @@ public class ByobMiddleware
 
     private readonly IConveyorBeltGateway _conveyorBelt;
     private readonly Tappery _tappery;
+    private readonly Shippery _shippery;
 
-    public ByobMiddleware(RequestDelegate next, IConveyorBeltGateway conveyorBelt, Tappery tappery)
+    public ByobMiddleware(RequestDelegate next, IConveyorBeltGateway conveyorBelt, Tappery tappery, Shippery shippery)
     {
         _next = next;
         _conveyorBelt = conveyorBelt;
         _tappery = tappery;
+        _shippery = shippery;
+
+        _tappery.Start();
+        _shippery.Start();
     }
 
     public async Task Invoke(HttpContext context)
@@ -25,7 +30,6 @@ public class ByobMiddleware
             _tappery.ReceiveBottle(bottle);
             
             Console.WriteLine($"Got bottle: {bottle.Id} ({bottle.BeerType})");
-            Console.WriteLine(JsonConvert.SerializeObject(bottle));
             context.Response.StatusCode = 204;
         }
         else if (context.Request.Path.StartsWithSegments("/api/start"))

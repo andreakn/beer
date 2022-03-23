@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Beer.Contracts;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace Beer.Core
 {
@@ -12,6 +13,8 @@ namespace Beer.Core
     {
         public const string Pils = "pils";
         public const string Bayer = "bayer";
+
+
     }
 
 
@@ -62,16 +65,22 @@ namespace Beer.Core
                 }
                 else
                 {
-                    var result = await _brewingGateway.FillBottle(bottle.Id);
-                    if (result.Item2 == null)
+                    var levelResult = await _brewingGateway.GetLevel(type);
+                    if(levelResult.Item2==null && levelResult.Item1 < (bottle.MaxContent - bottle.Content))
                     {
-                        jsonFile.Thing = result.Item1;
+                        await _brewingGateway.FillContainer(bottle.BeerType);
+                    }
+
+                    var result = await _brewingGateway.FillBottle(bottle.Id);
+                    if (result.Item1)
+                    {
+                        jsonFile.Thing = result.Item2;
                         ReQueue(jsonFile);
                     }
                     else
                     {
-                        Console.WriteLine("");
-                        result.Item2.
+                        Console.WriteLine("we gots problems filling: "+JsonConvert.SerializeObject(result.Item3));
+                        Console.WriteLine("Lets try refilling "+bottle.BeerType);
                     }
                 }
             }
@@ -95,57 +104,10 @@ namespace Beer.Core
 
         public bool ReceiveBottle(BottleDto b)
         {
-            var existingBottle = fileManager.LoadJson<BottleDto>("inbox.json");
-            if (existingBottle != null)
-            {
-                return false;
-            }
-            fileManager.SaveJson(b, "inbox.json", true);
+           fileManager.SaveJson(b, b.Id, true,"inbox");
             return true;
         }
-
-        public async Task<bool> TryFillBottle()
-        {
-            var state = fileManager.LoadJson<TapperyState>() ?? await LoadTapstate();
-            if (!state.IsTapping)
-            {
-                var b = fileManager.LoadJson<BottleDto>("inbox.json");
-                if (b == default(BottleDto))
-                {
-                    return false;
-                }
-
-                state.CurrentBottle = b;
-                var currentlevel = state.CurrentBottle.Content;
-                if (currentlevel < b.MaxContent)
-                {
-                    var diff = b.MaxContent - currentlevel;
-                    if(diff > state.GetLevel(b.BeerType))
-
-
-
-                    // call fill endpoint
-                    if (true) //vi kunne starte å fylle
-                    {
-                        state.CurrentBottle = b; //todo: den vi fikk tilbake
-                        state.IsTapping = true;
-                        if (b.Content == b.MaxContent)
-                        {
-                            state.CurrentBottle = null;
-                            state.IsTapping = false;
-                            fileManager.SaveJson(b, b.Id, true, "storage");
-                        }
-
-                        fileManager.SaveJson(state);
-                    }
-                }
-
-               
-            }
-            
-
-            return true;
-        }
+        
 
         private async Task<TapperyState> LoadTapstate()
         {

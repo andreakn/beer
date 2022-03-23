@@ -22,6 +22,7 @@ builder.Services.AddHttpClient<IBottleShopGateway, BottleShopGateway>(opt =>
     opt.DefaultRequestHeaders.Add("apiKey", Config.ApiKey);
 });
 builder.Services.AddSingleton<Tappery>();
+builder.Services.AddSingleton<Shippery>();
 
 
 var app = builder.Build();

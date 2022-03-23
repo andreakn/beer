@@ -2,7 +2,7 @@
 
 namespace Beer.Core;
 
-public class Shipper
+public class Shippery
 {
     private FileManager fileManager = new FileManager();
     private IBottleShopGateway _gateway ;
@@ -29,7 +29,7 @@ public class Shipper
     private bool _running;
     private Task _loop;
 
-    public Shipper(IBottleShopGateway gateway)
+    public Shippery(IBottleShopGateway gateway)
     {
         _gateway = gateway;
     }

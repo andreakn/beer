@@ -34,6 +34,10 @@ public class BottleDto
 
     public bool IsReadyToShip()
     {
+        if (IsExpired())
+        {
+            return false;
+        }
         if (CorkedTime == null)
         {
             return false;
